@@ -1,38 +1,24 @@
-from flask import Flask, render_template_string, request
+from flask import Flask, render_template, request, url_for
 import os
 
 app = Flask(__name__)
+
+# ইমেজ রাখার ফোল্ডার
 IMAGE_FOLDER = os.path.join('static', 'images')
 
-html = """<!DOCTYPE html>
-<html>
-<head>
-  <title>Simple Image Search</title>
-</head>
-<body>
-  <h1>Search Images</h1>
-  <form method="post">
-    <input type="text" name="query" placeholder="Type e.g. cat">
-    <button type="submit">Search</button>
-  </form>
-  {% if images %}
-    <h2>Results</h2>
-    {% for img in images %}
-      <img src="{{ url_for('static', filename='images/' + img) }}" width="200">
-    {% endfor %}
-  {% endif %}
-</body>
-</html>"""
-
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
     results = []
     if request.method == "POST":
-        q = request.form.get("query","").lower()
-        for f in os.listdir(IMAGE_FOLDER):
-            if q in f.lower():
-                results.append(f)
-    return render_template_string(html, images=results)
+        query = request.form.get("query", "").lower().strip()
+        if query:
+            # static/images এর সব ফাইল লুপ করে মিল খুঁজে বের করা
+            for filename in os.listdir(IMAGE_FOLDER):
+                if query in filename.lower():
+                    results.append(filename)
+    # index.html ফাইলকে রেন্ডার করা এবং ফলাফল পাঠানো
+    return render_template("index.html", images=results)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # লোকালি চালাতে হলে: python app.py
+    app.run(host="0.0.0.0", port=5000, debug=True)
