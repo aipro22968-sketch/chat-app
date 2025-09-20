@@ -6,9 +6,11 @@ app = Flask(__name__)
 # ইমেজ রাখার ফোল্ডার
 IMAGE_FOLDER = os.path.join('static', 'images')
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET","POST"])
 def index():
+    print("FILES:", os.listdir(IMAGE_FOLDER))
     results = []
+    ...
     if request.method == "POST":
         query = request.form.get("query", "").lower().strip()
         if query:
